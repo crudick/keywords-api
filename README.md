@@ -14,6 +14,10 @@ The following libraries are used:
 * org.apache.poi
     * poi 
     * poi-ooxml
+    
+My suggestion is to just load the required libraries manually as external jar files. I have included them in this repo under the directory /lib.
+    
+If you know how to use maven, then instead of loading the libraries manually, you can reference the below file to update the build file in eclipse. I didn't do this becaue I'm using intellij instead of eclipse and I'm personally not very familiar with Maven.
 
 #### Maven pom.xml
 ```
