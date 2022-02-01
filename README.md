@@ -2,14 +2,18 @@
 
 ### 1. Setup the working directory (where you'll store the excel files)
 
+On a mac, this might be a directory created in /Users/<your_user_name>/KeywordsApi.
+
+This is where you will put your input file and tell the program to look for the input file.
+
 
 ### 2. Install the library dependencies
 
 The following libraries are used:
 * com.google.code.gson
 * org.apache.poi
-** poi 
-** poi-ooxml
+    * poi 
+    * poi-ooxml
 
 #### Maven pom.xml
 ```
