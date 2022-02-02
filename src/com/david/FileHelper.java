@@ -22,6 +22,7 @@ public class FileHelper {
     public String workbookName;
     public List<SearchVolumeResult> records;
     Workbook workbook;
+    Sheet outputSheet;
 
     public FileHelper(){
         records = new ArrayList<>();
@@ -33,6 +34,34 @@ public class FileHelper {
         try {
             file = new FileInputStream(new File(fileName));
             workbook = new XSSFWorkbook(file);
+
+            outputSheet = workbook.getSheet("Output");
+            if(outputSheet != null){
+                int i = 0;
+                for (Row row : outputSheet) {
+                    if(i==0 || row.getCell(0) == null){
+                        //Skip the header
+                        i++;
+                        continue;
+                    }
+                    var keyword = row.getCell(0).getStringCellValue();
+                    var volume = row.getCell(1).getNumericCellValue();
+                    if((keyword != null && keyword.length() > 0) ||
+                            volume != 0){
+                        var searchVolumeResult = new SearchVolumeResult();
+                        searchVolumeResult.string = keyword;
+                        searchVolumeResult.volume =  (long)volume;
+                        searchVolumeResult.cpc = (float)row.getCell(2).getNumericCellValue();
+                        searchVolumeResult.cmp = (float)row.getCell(3).getNumericCellValue();
+                        searchVolumeResult.seedword = row.getCell(4).getStringCellValue();
+
+                        records.add(searchVolumeResult);
+                    }
+                    i++;
+                }
+                workbook.removeSheetAt(1);
+            }
+            outputSheet = workbook.createSheet("Output");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,8 +75,18 @@ public class FileHelper {
 
             int i = 0;
             for (Row row : sheet) {
-                var keyword = row.getCell(0).getStringCellValue();
-                if(!keyword.equalsIgnoreCase("Seedwords")){
+                var keyword = row.getCell(0).getStringCellValue();;
+                if(keyword==null || keyword.length() == 0){
+                    i++;
+                    continue;
+                }
+                var status = "incomplete";
+                if(row.getCell(1) != null){
+                    status = row.getCell(1).getStringCellValue();
+                }
+
+                if(!keyword.equalsIgnoreCase("Seedwords") &&
+                        !status.equalsIgnoreCase("completed")){
                     if(keyword != null && keyword.length() > 0){
                         data.put(i, new ArrayList<String>());
                         for (Cell cell : row) {
@@ -87,8 +126,7 @@ public class FileHelper {
 
     public void writeRecordsToOutputSheet(){
 
-        Sheet sheet = workbook.createSheet("Output");
-        Row header = sheet.createRow(0);
+        Row header = outputSheet.createRow(0);
 
         CellStyle headerStyle = workbook.createCellStyle();
         XSSFFont font = ((XSSFWorkbook) workbook).createFont();
@@ -119,7 +157,7 @@ public class FileHelper {
         var i = 1;
 
         for (SearchVolumeResult record : records) {
-            var row = sheet.createRow(i);
+            var row = outputSheet.createRow(i);
 
             var cell = row.createCell(0);
             cell.setCellValue(record.string);

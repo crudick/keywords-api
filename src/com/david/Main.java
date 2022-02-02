@@ -15,8 +15,16 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+        String CSV_FILE_NAME = "";
+        var i = 0;
+        while(i< args.length) {
+            if(args[i].equalsIgnoreCase("-f")){
+                i++;
+                CSV_FILE_NAME = args[i];
+            }
+            i++;
+        }
         var fh = new FileHelper();
-        String CSV_FILE_NAME = "C:\\GIT\\keywords-api\\examples\\example_1.xlsx";
         fh.openWorkbook(CSV_FILE_NAME);
         var service = new KeywordLookupService();
         service.initialize("e6176241edd47ca42ee206250507325ff5aec829");
